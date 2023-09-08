@@ -1,8 +1,10 @@
 import UIKit
 
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController, LoginView {
 
     private var setUpButton: UIBarButtonItem!
+
+    var presenter: LoginPresenter?
 
     // titleLabel
     private let titleLabel: UILabel = {
@@ -114,8 +116,8 @@ class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        presenter = LoginPresenterImpl(view: self)
         setUpContents()
-        setUpLoginConstraints()
         setUpNavigation()
     }
 
@@ -129,6 +131,7 @@ class LoginViewController: UIViewController {
       view.addSubview(passWordTextField)
       view.addSubview(passWordTextFieldUnderlineView)
       view.addSubview(loginButton)
+      setUpLoginConstraints()
     }
 
     private func setUpConstraints() {
@@ -243,7 +246,11 @@ class LoginViewController: UIViewController {
 
     func setUpNavigation() {
       // サインアップボタンを作成
-      setUpButton = UIBarButtonItem(title: "signup", style: .plain, target: self, action: nil)
+        setUpButton = UIBarButtonItem(title: "signup",
+                                      style: .plain,
+                                      target: self,
+                                      action: #selector(setUpButtonTapped))
+
       // カスタムフォントを適用したいタイトルフォントを設定
       let font = UIFont.systemFont(ofSize: 12) // フォントサイズを指定
       let normalAttributes: [NSAttributedString.Key: Any] = [
@@ -258,6 +265,40 @@ class LoginViewController: UIViewController {
       setUpButton.setTitleTextAttributes(highlightedAttributes, for: .highlighted)
       // ボタンをナビゲーションバーに追加
       navigationItem.rightBarButtonItem = setUpButton
+    }
+
+    private func resetUpView() {
+      mailAddressLabel.removeFromSuperview()
+      mailAddressTextField.removeFromSuperview()
+      mailAddressTextFieldUnderlineView.removeFromSuperview()
+      passWordLabel.removeFromSuperview()
+      passWordTextField.removeFromSuperview()
+      passWordTextFieldUnderlineView.removeFromSuperview()
+      nameLabel.removeFromSuperview()
+      nameTextField.removeFromSuperview()
+      nameTextFieldUnderlineView.removeFromSuperview()
+    }
+
+    // ボタンがタップされたときのアクション
+    @objc private func setUpButtonTapped() {
+        resetUpView()
+        if let currentTitle = setUpButton.title {
+            if currentTitle == "login" {
+                presenter?.updateTitleAndButton(isLogin: true)
+                setUpContents()
+            } else {
+                presenter?.updateTitleAndButton(isLogin: false)
+                setUpSignUpConstraints()
+            }
+        }
+    }
+
+    func updateTitleAndButton(title: String) {
+        titleLabel.text = title
+    }
+
+    func setButtonTitle(title: String) {
+        setUpButton.title = title
     }
 }
 
