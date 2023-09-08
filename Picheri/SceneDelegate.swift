@@ -1,22 +1,62 @@
-//
-//  SceneDelegate.swift
-//  Picheri
-//
-//  Created by Mayu Yonezu on 2023/09/08.
-//
-
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+        setupNavigation()
+        setGradientBackground()
+        setupTintColor()
+        setTextFieldColors()
         guard let _ = (scene as? UIWindowScene) else { return }
+    }
+
+    func setupNavigation() {
+        let loginViewController = LoginViewController()
+        let navigationController = UINavigationController(rootViewController: loginViewController)
+        
+        // ナビゲーションコントローラをウィンドウに設定
+        window?.rootViewController = navigationController
+        
+        // ウィンドウを表示
+        window?.makeKeyAndVisible()
+    }
+
+
+    func setGradientBackground() {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = window?.bounds ?? UIScreen.main.bounds
+
+        if let pinkColor = UIColor(named: "pink")?.cgColor, let lightPinkColor = UIColor(named: "lightPink")?.cgColor {
+            gradientLayer.colors = [pinkColor, lightPinkColor]
+        } else {
+            gradientLayer.colors = [UIColor.systemPink.cgColor, UIColor.white.cgColor]
+        }
+
+        gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.0)
+        gradientLayer.endPoint = CGPoint(x: 0.0, y: 1.0)
+
+        window?.layer.insertSublayer(gradientLayer, at: 0)
+    }
+
+    func setupTintColor() {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            let window = UIWindow(windowScene: windowScene)
+            let loginViewController = LoginViewController()
+            let navigationController = UINavigationController(rootViewController: loginViewController)
+            window.rootViewController = navigationController
+            window.makeKeyAndVisible()
+            window.tintColor = UIColor(named: "white") ?? UIColor.white
+            UITextField.appearance(whenContainedInInstancesOf: [UIView.self])
+                .tintColor = UIColor(named: "white") ?? UIColor.white
+            UITextView.appearance(whenContainedInInstancesOf: [UIView.self])
+                .tintColor = UIColor(named: "white") ?? UIColor.white
+        }
+    }
+
+    func setTextFieldColors() {
+        UITextField.appearance().textColor = UIColor(named: "white") ?? UIColor.white
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
